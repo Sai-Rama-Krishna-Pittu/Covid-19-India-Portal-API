@@ -1,22 +1,20 @@
 # Covid-19 India Portal
 
-Given two files `app.js` and a database file `covid19IndiaPortal.db` consisting of three tables `state`, `district` and `user`.
+This project implements a backend service for a Covid-19 tracking portal in India. The service provides APIs for managing and retrieving data related to states and districts, with authentication required for all operations. The backend is built using Node.js, Express, and SQLite.
 
-Write APIs to perform operations on the tables `state`, `district` only after authentication of the user.
+## Database Schema
 
-The columns of the tables are given below,
+### State Table
 
-**State Table**
-
-| Columns    | Type    |
+| Column     | Type    |
 | ---------- | ------- |
 | state_id   | INTEGER |
 | state_name | TEXT    |
 | population | INTEGER |
 
-**District Table**
+### District Table
 
-| Columns       | Type    |
+| Column        | Type    |
 | ------------- | ------- |
 | district_id   | INTEGER |
 | district_name | TEXT    |
@@ -26,138 +24,72 @@ The columns of the tables are given below,
 | active        | INTEGER |
 | deaths        | INTEGER |
 
-You can use your previous code if required.
+### User Table
 
-#### Sample Valid User Credentials
+Contains user credentials for authentication.
 
-```
+## API Endpoints
+
+### Authentication
+
+#### Login
+
+**Path:** `/login/`
+
+**Method:** `POST`
+
+**Request:**
+```json
 {
   "username": "christopher_phillips",
   "password": "christy@123"
 }
 ```
 
-### API 1
-
-#### Path: `/login/`
-
-#### Method: `POST`
-
-**Request**
-
-```
-{
-  "username": "christopher_phillips",
-  "password": "christy@123"
-}
-```
-
-- **Scenario 1**
-
-  - **Description**:
-
-    If an unregistered user tries to login
-
-  - **Response**
-    - **Status code**
-      ```
-      400
-      ```
-    - **Body**
-      ```
-      Invalid user
-      ```
-
-- **Scenario 2**
-
-  - **Description**:
-
-    If the user provides an incorrect password
-
-  - **Response**
-    - **Status code**
-      ```
-      400
-      ```
-    - **Body**
-      ```
-      Invalid password
-      ```
-
-- **Scenario 3**
-
-  - **Description**:
-
-    Successful login of the user
-
-  - **Response**
-
-    Return the JWT Token
-
-    ```
+**Responses:**
+- **Invalid User**
+  - **Status Code:** 400
+  - **Body:** `Invalid user`
+- **Invalid Password**
+  - **Status Code:** 400
+  - **Body:** `Invalid password`
+- **Successful Login**
+  - **Status Code:** 200
+  - **Body:**
+    ```json
     {
       "jwtToken": "ak2284ns8Di32......"
     }
     ```
 
-### Authentication with Token
+### States
 
-- **Scenario 1**
+#### Get All States
 
-  - **Description**:
+**Path:** `/states/`
 
-    If the token is not provided by the user or an invalid token
+**Method:** `GET`
 
-  - **Response**
-    - **Status code**
-      ```
-      401
-      ```
-    - **Body**
-      ```
-      Invalid JWT Token
-      ```
-
-- **Scenario 2**
-  After successful verification of token proceed to next middleware or handler
-
-### API 2
-
-#### Path: `/states/`
-
-#### Method: `GET`
-
-#### Description:
-
-Returns a list of all states in the state table
-
-#### Response
-
-```
+**Response:**
+```json
 [
   {
     "stateId": 1,
     "stateName": "Andaman and Nicobar Islands",
     "population": 380581
   },
-
   ...
 ]
 ```
 
-### API 3
+#### Get State by ID
 
-#### Path: `/states/:stateId/`
+**Path:** `/states/:stateId/`
 
-#### Method: `GET`
+**Method:** `GET`
 
-#### Description:
-
-Returns a state based on the state ID
-
-#### Response
-
-```
+**Response:**
+```json
 {
   "stateId": 8,
   "stateName": "Delhi",
@@ -165,19 +97,16 @@ Returns a state based on the state ID
 }
 ```
 
-### API 4
+### Districts
 
-#### Path: `/districts/`
+#### Create District
 
-#### Method: `POST`
+**Path:** `/districts/`
 
-#### Description:
+**Method:** `POST`
 
-Create a district in the district table, `district_id` is auto-incremented
-
-#### Request
-
-```
+**Request:**
+```json
 {
   "districtName": "Bagalkot",
   "stateId": 3,
@@ -188,25 +117,19 @@ Create a district in the district table, `district_id` is auto-incremented
 }
 ```
 
-#### Response
-
+**Response:**
 ```
 District Successfully Added
 ```
 
-### API 5
+#### Get District by ID
 
-#### Path: `/districts/:districtId/`
+**Path:** `/districts/:districtId/`
 
-#### Method: `GET`
+**Method:** `GET`
 
-#### Description:
-
-Returns a district based on the district ID
-
-#### Response
-
-```
+**Response:**
+```json
 {
   "districtId": 322,
   "districtName": "Palakkad",
@@ -218,36 +141,25 @@ Returns a district based on the district ID
 }
 ```
 
-### API 6
+#### Delete District
 
-#### Path: `/districts/:districtId/`
+**Path:** `/districts/:districtId/`
 
-#### Method: `DELETE`
+**Method:** `DELETE`
 
-#### Description:
-
-Deletes a district from the district table based on the district ID
-
-#### Response
-
+**Response:**
 ```
 District Removed
-
 ```
 
-### API 7
+#### Update District
 
-#### Path: `/districts/:districtId/`
+**Path:** `/districts/:districtId/`
 
-#### Method: `PUT`
+**Method:** `PUT`
 
-#### Description:
-
-Updates the details of a specific district based on the district ID
-
-#### Request
-
-```
+**Request:**
+```json
 {
   "districtName": "Nadia",
   "stateId": 3,
@@ -258,40 +170,63 @@ Updates the details of a specific district based on the district ID
 }
 ```
 
-#### Response
-
+**Response:**
 ```
-
 District Details Updated
-
 ```
 
-### API 8
+### State Statistics
 
-#### Path: `/states/:stateId/stats/`
+#### Get State Statistics
 
-#### Method: `GET`
+**Path:** `/states/:stateId/stats/`
 
-#### Description:
+**Method:** `GET`
 
-Returns the statistics of total cases, cured, active, deaths of a specific state based on state ID
-
-#### Response
-
-```
+**Response:**
+```json
 {
   "totalCases": 724355,
   "totalCured": 615324,
   "totalActive": 99254,
   "totalDeaths": 9777
 }
-
 ```
 
-<br/>
+## Setup and Installation
 
-Use `npm install` to install the packages.
+1. Clone the repository:
+   ```sh
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```sh
+   cd covid19-india-portal
+   ```
+3. Install dependencies:
+   ```sh
+   npm install
+   ```
+4. Start the server:
+   ```sh
+   npm start
+   ```
+
+## Usage
+
+- Ensure you have the `covid19IndiaPortal.db` SQLite database set up with the `state`, `district`, and `user` tables.
+- Use a tool like Postman to interact with the APIs.
+- Make sure to include the JWT token in the `Authorization` header for all requests requiring authentication.
+
+## Technologies Used
+
+- Node.js
+- Express.js
+- SQLite
 
 **Export the express instance using the default export syntax.**
-
 **Use Common JS module syntax.**
+
+## License
+
+This project is licensed under the MIT License.
